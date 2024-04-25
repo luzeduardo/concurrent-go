@@ -6,6 +6,8 @@ import (
 )
 
 func main() {
+	//this a shared memoery variable
+	//Go will allocate spcae on the heap space instead of function's stack
 	count := 5
 	go countdown(&count)
 	for count > 0 {

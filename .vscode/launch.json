@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
       {
-        "name": "gorou Current File",
+        "name": "ConcurrentGO Current File",
         "type": "go",
         "request": "launch",
         "mode": "test",

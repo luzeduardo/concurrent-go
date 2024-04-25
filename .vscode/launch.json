@@ -5,12 +5,14 @@
   "version": "0.2.0",
   "configurations": [
       {
-        "name": "ConcurrentGO Current File",
+        "name": "ConcurrentGO file debugger",
         "type": "go",
         "request": "launch",
-        "mode": "test",
-        "program": "${workspaceFolder}/${relativeFileDirname}",
-        "showLog": true        
-      }
+        "mode": "auto",
+        "cwd": "${workspaceRoot}",
+        "program": "${file}",
+        "env": {},
+        "showLog": true
+      },
   ]
 }

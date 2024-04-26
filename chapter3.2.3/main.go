@@ -35,8 +35,10 @@ func main() {
 	}
 	//forcing the main thread to not finish before goroutines finishes their jobs
 	time.Sleep(5 * time.Second)
-
+	var allLetterSum int
 	for i, c := range allLetters {
+		allLetterSum += frequency[i]
 		fmt.Printf("%c-%d\n", c, frequency[i])
 	}
+	fmt.Printf("Letters in docs: %d\n", allLetterSum)
 }

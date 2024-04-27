@@ -16,15 +16,17 @@ func countLetters(url string, frequency []int, mutex *sync.Mutex) {
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(resp.Body)
 
+	// the sequential-to-parallel ration will limit the performance scalability
+	// it is essential to reduce the time spent holding the mutex lock
+	mutex.Lock()
 	for _, b := range body {
 		c := strings.ToLower(string(b))
 		cIndex := strings.Index(allLetters, c)
 		if cIndex >= 0 {
-			mutex.Lock()
 			frequency[cIndex] += 1
-			mutex.Unlock()
 		}
 	}
+	mutex.Unlock()
 	fmt.Println("Completed: ", url)
 }
 

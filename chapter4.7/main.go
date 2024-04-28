@@ -9,21 +9,22 @@ import (
 )
 
 // event listener that assigns each event to a shared data structure
-func matchRecorder(matchEvents *list.List, mutex *sync.Mutex) {
+func matchRecorder(matchEvents *list.List, mutex *sync.RWMutex) {
 	for i := 0; ; i++ {
 		mutex.Lock()
 		matchEvents.PushBack("Match event " + strconv.Itoa(i))
 		mutex.Unlock()
+
 		time.Sleep(1 * time.Second)
-		fmt.Println("Appended match event")
+		fmt.Println("Appended match event", strconv.Itoa(i))
 	}
 }
 
 // simulates build of a response to send back to the user
-func clientHandler(mEvents *list.List, mutex *sync.Mutex, st time.Time) {
-	mutex.Lock()
+func clientHandler(mEvents *list.List, mutex *sync.RWMutex, st time.Time) {
+	mutex.RLock()
 	allEvents := copyAllEvents(mEvents)
-	mutex.Unlock()
+	mutex.RUnlock()
 
 	timeTaken := time.Since(st)
 	fmt.Println(len(allEvents), "events copied in", timeTaken)
@@ -40,9 +41,9 @@ func copyAllEvents(matchEvents *list.List) []string {
 }
 
 func main() {
-	mutex := sync.Mutex{}
-	var matchEvents = list.New()
-	//pre populate match events
+	mutex := sync.RWMutex{}
+	matchEvents := list.New()
+	// pre populate match events
 	for j := 0; j < 10000; j++ {
 		matchEvents.PushBack("Match Event")
 	}

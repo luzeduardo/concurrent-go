@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"time"
@@ -25,6 +26,10 @@ func playerHanlder(cond *sync.Cond, playersRemaining *int, playerId int) {
 
 	*playersRemaining--
 
+	if playerId == 2 || playerId == 1 {
+		time.Sleep(10 * time.Second)
+	}
+
 	if *playersRemaining == 0 {
 		cond.Broadcast()
 	}
@@ -37,4 +42,10 @@ func playerHanlder(cond *sync.Cond, playersRemaining *int, playerId int) {
 
 	cond.L.Unlock()
 	fmt.Println("All players connected. Ready to play", playerId)
+}
+
+func expirerTime(cond *sync.Cond) {
+	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	cond.Broadcast()
 }

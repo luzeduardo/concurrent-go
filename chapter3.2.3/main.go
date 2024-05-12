@@ -6,12 +6,11 @@ import (
 	"net/http"
 	"strings"
 	"sync"
-	"time"
 )
 
 const allLetters = "abcdefghijklmnopqrstuvwxyz"
 
-func countLetters(url string, frequency []int, mutex *sync.Mutex) {
+func countLetters(url string, frequency []int, mutex *sync.Mutex, wg *sync.WaitGroup) {
 	resp, _ := http.Get(url)
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(resp.Body)
@@ -28,21 +27,24 @@ func countLetters(url string, frequency []int, mutex *sync.Mutex) {
 	}
 	mutex.Unlock()
 	fmt.Println("Completed: ", url)
+	wg.Done()
 }
 
 func main() {
-	//all goroutines will share the same data structure in memory
-	//and it will add a race condition
-	var frequency = make([]int, 26)
-	var mutex = sync.Mutex{}
+	// all goroutines will share the same data structure in memory
+	// and it will add a race condition
+	frequency := make([]int, 26)
+	mutex := sync.Mutex{}
+	wg := sync.WaitGroup{}
+	wg.Add(21)
 	for i := 1000; i <= 1020; i++ {
 		url := fmt.Sprintf("https://rfc-editor.org/rfc/rfc%d.txt", i)
-		go countLetters(url, frequency, &mutex)
+		go countLetters(url, frequency, &mutex, &wg)
 	}
-	//forcing the main thread to not finish before goroutines finishes their jobs
-	time.Sleep(5 * time.Second)
+	// forcing the main thread to not finish before goroutines finishes their jobs
 	var allLetterSum int
 	for i, c := range allLetters {
+		wg.Wait()
 		mutex.Lock()
 		allLetterSum += frequency[i]
 		fmt.Printf("%c-%d\n", c, frequency[i])

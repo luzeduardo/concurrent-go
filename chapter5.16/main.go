@@ -1,6 +1,9 @@
 package main
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+)
 
 type Semaphore struct {
 	permits int
@@ -32,4 +35,21 @@ func (rw *Semaphore) Release() {
 	rw.cond.Signal()
 
 	rw.cond.L.Unlock()
+}
+
+func main() {
+	semaphore := NewSemaphore(0)
+	for i := 0; i < 20; i++ {
+		go doWork(semaphore, i)
+
+		semaphore.Acquire()
+		fmt.Println("Child goroutine finished: ", i)
+	}
+}
+
+func doWork(semaphore *Semaphore, i int) {
+	fmt.Println("Work started: ", i)
+	fmt.Println("Work Finished ", i)
+
+	semaphore.Release()
 }

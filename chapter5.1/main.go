@@ -13,7 +13,9 @@ func stingy(money *int, cond *sync.Cond) {
 		*money += 10
 		// Signal -> After updating the shared state above,  the condition unlocks the mutex
 		//   - So other gouroutine will receive this Signal and wake up, and reaqcquire the mutex to proceed with its job
-		cond.Signal()
+		if *money >= 50 {
+			cond.Signal()
+		}
 		cond.L.Unlock()
 	}
 	fmt.Println("Stingy Done")

@@ -6,15 +6,12 @@ import (
 )
 
 func receiver(msgs <-chan int) {
-	for {
-		msg, stillOpen := <-msgs
-		// adds  flag to check if the channel still open, otherwise quit the loop for receiving messages
-		if !stillOpen {
-			return
-		}
+	// instead of check with a open flag reading from a channel, just use a range and it will iterate until the channel gets closed
+	for msg := range msgs {
 		fmt.Println(time.Now().Format("15:04:02"), "Received: ", msg)
 		time.Sleep(1 * time.Second)
 	}
+	fmt.Println("Receiver finished")
 }
 
 func main() {

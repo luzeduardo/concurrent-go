@@ -13,8 +13,10 @@ func findFactors(number int) []int {
 }
 
 func main() {
-	a := findFactors(3419110721)
-	fmt.Println(a)
-	a = findFactors(341)
-	fmt.Println(a)
+	resultChn := make(chan []int)
+	go func() {
+		resultChn <- findFactors(3419110721)
+	}()
+	fmt.Println(findFactors(341))
+	fmt.Println(<-resultChn)
 }

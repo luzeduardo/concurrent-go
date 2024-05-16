@@ -7,7 +7,11 @@ import (
 
 func receiver(msgs <-chan int) {
 	for {
-		msg := <-msgs
+		msg, stillOpen := <-msgs
+		// adds  flag to check if the channel still open, otherwise quit the loop for receiving messages
+		if !stillOpen {
+			return
+		}
 		fmt.Println(time.Now().Format("15:04:02"), "Received: ", msg)
 		time.Sleep(1 * time.Second)
 	}
